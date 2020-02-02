@@ -7,6 +7,8 @@ class Board:
         self.n_queen = n
         self.map = [[0 for j in range(n)] for i in range(n)] # List of lists for board?
         self.fit = 0
+        self.optimal_map = np.copy(self.map)
+        self.fitness_max = 0
         print("Board constructed!\n")
 
     def set_queens(self):
@@ -36,6 +38,7 @@ class Board:
     def save_config(self):
         
         config_list = []
+        self.optimal_map = np.copy(self.map) # Make copy of current config 
 
         for i in range(self.n_queen):
             for j in range(self.n_queen):
@@ -43,8 +46,9 @@ class Board:
                 if self.map[i][j] == 1:
                     
                     config_list.append(j)
-    
-        print("\nFitness Max config: ", str(config_list))
+                    
+        # print(self.optimal_map)
+        # print("\nFitness Max config: ", str(config_list))
 
     
 
@@ -64,8 +68,8 @@ class Board:
                 self.show()
                 
 
-                if temp_max > fitness_max:
-                    fitness_max = temp_max
+                if temp_max > self.fitness_max:
+                    self.fitness_max = temp_max
                     self.save_config()
 
                 self.map[i][j] = 0 # Flip bit back
@@ -87,3 +91,5 @@ if __name__ == '__main__':
     # test.fitness()
     # test.show()
     test.move()
+    print("\nOptimal: " + str(test.fitness_max))
+    print(test.optimal_map)
