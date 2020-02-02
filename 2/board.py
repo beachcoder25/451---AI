@@ -37,7 +37,7 @@ class Board:
     # Move Function
     def move(self):
         fitness_max = 0
-        #print(self.n_queen)
+        
 
         
         for i in range(1):
