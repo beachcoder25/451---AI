@@ -32,6 +32,20 @@ class Board:
         print(np.matrix(self.map))
         print("Fitness: ",  self.fit, "\n\n")
 
+    # Iterates through current configuration, and saves positions to a list
+    def save_config(self):
+        
+        config_list = []
+
+        for i in range(self.n_queen):
+            for j in range(self.n_queen):
+
+                if self.map[i][j] == 1:
+                    
+                    config_list.append(j)
+    
+        print("\nFitness Max config: ", str(config_list))
+
     
 
     # Move Function
@@ -46,14 +60,18 @@ class Board:
             print("\n\nMOVE FUNCTION\n\n")
             for j in range(self.n_queen):
                 self.map[i][j] = 1 # Flip bit
-                temp_max = test.fitness()
-                test.show()
-                self.map[i][j] = 0 # Flip bit back
+                temp_max = self.fitness()
+                self.show()
+                
 
                 if temp_max > fitness_max:
                     fitness_max = temp_max
+                    self.save_config()
+
+                self.map[i][j] = 0 # Flip bit back
         
         print("\n\nFitness max: " + str(fitness_max))
+        
                     
                     
                 
