@@ -9,6 +9,7 @@ class Board:
         self.fit = 0
         self.optimal_map = np.copy(self.map)
         self.fitness_max = 0
+        self.config_list = []
         print("Board constructed!\n")
 
     def set_queens(self):
@@ -37,7 +38,7 @@ class Board:
     # Iterates through current configuration, and saves positions to a list
     def save_config(self):
         
-        config_list = []
+        self.config_list.clear()
         self.optimal_map = np.copy(self.map) # Make copy of current config 
 
         for i in range(self.n_queen):
@@ -45,10 +46,10 @@ class Board:
 
                 if self.map[i][j] == 1:
                     
-                    config_list.append(j)
+                    self.config_list.append(j)
                     
         # print(self.optimal_map)
-        # print("\nFitness Max config: ", str(config_list))
+        
 
     
 
@@ -58,7 +59,10 @@ class Board:
         
 
         
-        for i in range(1):
+        for i in range(self.n_queen):
+            if i > 0:
+                self.map = np.copy(self.optimal_map)
+
             self.map[i] = [0] * self.n_queen # Set current row to all 0's, WORKS
             
             print("\n\nMOVE FUNCTION\n\n")
@@ -74,17 +78,8 @@ class Board:
 
                 self.map[i][j] = 0 # Flip bit back
         
-        print("\n\nFitness max: " + str(fitness_max))
-        
-                    
-                    
-                
-                #else if self.map[i][j] == 0:
 
-
-
-
-        
+   
 if __name__ == '__main__':
     test = Board(5)
     test.set_queens()
@@ -92,4 +87,5 @@ if __name__ == '__main__':
     # test.show()
     test.move()
     print("\nOptimal: " + str(test.fitness_max))
+    print("\nFitness Max config: ", str(test.config_list))
     print(test.optimal_map)
