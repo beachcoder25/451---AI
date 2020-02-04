@@ -40,6 +40,10 @@ class Board:
         
         self.config_list.clear()
         self.optimal_map = np.copy(self.map) # Make copy of current config 
+        self.get_config_list()
+
+    # Returns a list with the current positions of queens on the board
+    def get_config_list(self):
 
         for i in range(self.n_queen):
             for j in range(self.n_queen):
@@ -89,3 +93,4 @@ if __name__ == '__main__':
     print("\nOptimal: " + str(test.fitness_max))
     print("\nFitness Max config: ", str(test.config_list))
     print(test.optimal_map)
+    
