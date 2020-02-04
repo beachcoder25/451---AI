@@ -93,6 +93,10 @@ class Board:
                     self.save_config()
 
                 self.map[i][j] = 0 # Flip bit back
+
+
+    def clear_board(self):
+        self.map = [[0 for j in range(self.n_queen)] for i in range(self.n_queen)]
         
 
 class Genetic_algorithm:
@@ -108,13 +112,14 @@ class Genetic_algorithm:
 
     def append_fitness_vals(self):
         print("Ayo")
+        self.fitness_total = 0
         for i in range(self.board.n_queen):
-            
+            self.board.clear_board()
             self.board.set_queens()
             
             fitness_val = self.board.fitness() # Has fitness value
             self.orientation_lists[i].append(self.board.get_config_list()) # Append current config 
-            #self.board.show()
+            self.board.show()
             #print(self.board.get_config_list())
             #self.orientation_lists.append(this_list.append(temp_list)) 
             self.fitness_total += fitness_val
@@ -134,12 +139,12 @@ if __name__ == '__main__':
     # Part 1 WORKS
     ################
 
-    test = Board(5)
-    test.set_queens()
-    test.move()
-    print("\nOptimal: " + str(test.fitness_max))
-    print("\nFitness Max config: ", str(test.config_list))
-    print(test.optimal_map)
+    # test = Board(5)
+    # test.set_queens()
+    # test.move()
+    # print("\nOptimal: " + str(test.fitness_max))
+    # print("\nFitness Max config: ", str(test.config_list))
+    # print(test.optimal_map)
 
     ################
     # End Part 1
@@ -150,8 +155,8 @@ if __name__ == '__main__':
     # Part 2 INC
     ################
 
-    # board = Board(5)
-    # gen_algo = Genetic_algorithm(board)
-    # sum = gen_algo.append_fitness_vals()
-    # print(sum)
+    board = Board(5)
+    gen_algo = Genetic_algorithm(board)
+    sum = gen_algo.append_fitness_vals()
+    print("Sum:", sum)
     
