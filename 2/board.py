@@ -10,7 +10,8 @@ class Board:
         self.optimal_map = np.copy(self.map)
         self.fitness_max = 0
         self.config_list = []
-        print("Board constructed!\n")
+        self.max_config_list = []
+        #print("Board constructed!\n")
 
     def set_queens(self):
         for i in range(self.n_queen):
@@ -40,22 +41,30 @@ class Board:
         
         self.config_list.clear()
         self.optimal_map = np.copy(self.map) # Make copy of current config 
-        self.get_config_list()
+        ret_list = self.get_config_list()
+
+        return ret_list
 
     # Returns a list with the current positions of queens on the board
     def get_config_list(self):
 
+        self.config_list.clear()
+
         for i in range(self.n_queen):
             for j in range(self.n_queen):
-
                 if self.map[i][j] == 1:
-                    
                     self.config_list.append(j)
+        return self.config_list
+        # print("TEMP:",temp_list)
+        # print("CONFIG:",self.config_list)
+        
+        # print("CONFIG:", self.config_list)
+        # return temp_list
                     
         # print(self.optimal_map)
         
 
-    
+     
 
     # Move Function
     def move(self):
@@ -78,19 +87,71 @@ class Board:
 
                 if temp_max > self.fitness_max:
                     self.fitness_max = temp_max
+                    self.max_config_list.clear()
+                    #self.max_config_list = self.save_config()
+                    print("Huh?")
                     self.save_config()
 
                 self.map[i][j] = 0 # Flip bit back
         
 
+class Genetic_algorithm:
    
+    def __init__(self, board):
+        self.board = board
+        self.orientation_lists = [ [] for i in range(self.board.n_queen) ] # Creates list with n empty lists
+        #print(self.orientation_lists)
+        #self.board.show()
+        # self.fitness_val = 0
+        self.fitness_total = 0
+        
+
+    def append_fitness_vals(self):
+        print("Ayo")
+        for i in range(self.board.n_queen):
+            
+            self.board.set_queens()
+            
+            fitness_val = self.board.fitness() # Has fitness value
+            self.orientation_lists[i].append(self.board.get_config_list()) # Append current config 
+            #self.board.show()
+            #print(self.board.get_config_list())
+            #self.orientation_lists.append(this_list.append(temp_list)) 
+            self.fitness_total += fitness_val
+
+        return self.fitness_total # Sum of lists for division
+
+
+    
+
+
+
+
+
 if __name__ == '__main__':
+    
+    ################
+    # Part 1 WORKS
+    ################
+
     test = Board(5)
     test.set_queens()
-    # test.fitness()
-    # test.show()
     test.move()
     print("\nOptimal: " + str(test.fitness_max))
     print("\nFitness Max config: ", str(test.config_list))
     print(test.optimal_map)
+
+    ################
+    # End Part 1
+    ################
+
+
+    ################
+    # Part 2 INC
+    ################
+
+    # board = Board(5)
+    # gen_algo = Genetic_algorithm(board)
+    # sum = gen_algo.append_fitness_vals()
+    # print(sum)
     
