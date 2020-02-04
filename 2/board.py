@@ -9,8 +9,11 @@ class Board:
         self.fit = 0
         self.optimal_map = np.copy(self.map)
         self.fitness_max = 0
+        self.initial_config_list = []
         self.config_list = []
         self.max_config_list = []
+        self.temp_config_list = []
+        self.setp_count = 0
         #print("Board constructed!\n")
 
     def set_queens(self):
@@ -41,9 +44,9 @@ class Board:
         
         self.config_list.clear()
         self.optimal_map = np.copy(self.map) # Make copy of current config 
-        ret_list = self.get_config_list()
+        return self.get_config_list()
 
-        return ret_list
+        
 
     # Returns a list with the current positions of queens on the board
     def get_config_list(self):
@@ -55,44 +58,51 @@ class Board:
                 if self.map[i][j] == 1:
                     self.config_list.append(j)
         return self.config_list
-        # print("TEMP:",temp_list)
-        # print("CONFIG:",self.config_list)
-        
-        # print("CONFIG:", self.config_list)
-        # return temp_list
-                    
-        # print(self.optimal_map)
+
         
 
      
 
     # Move Function
     def move(self):
-        fitness_max = 0
         
-
+        temp = self.get_config_list()
+        self.initial_config_list = temp.copy()
+        # self.initial_config_list = self.get_config_list()
+        
+        print("IC:",self.initial_config_list)
+        print(self.map)
         
         for i in range(self.n_queen):
+
             if i > 0:
                 self.map = np.copy(self.optimal_map)
 
             self.map[i] = [0] * self.n_queen # Set current row to all 0's, WORKS
             
-            print("\n\nMOVE FUNCTION\n\n")
+            #print("\n\nMOVE FUNCTION\n\n")
             for j in range(self.n_queen):
                 self.map[i][j] = 1 # Flip bit
                 temp_max = self.fitness()
-                self.show()
+                #self.show()
                 
 
                 if temp_max > self.fitness_max:
                     self.fitness_max = temp_max
-                    self.max_config_list.clear()
-                    #self.max_config_list = self.save_config()
-                    print("Huh?")
                     self.save_config()
 
                 self.map[i][j] = 0 # Flip bit back
+
+            print("IC:",self.initial_config_list)
+        return self.initial_config_list
+
+    def calculate_steps(self):
+
+        for i in range(self.n_queen):
+            if self.initial_config_list[i] != self.config_list:
+                self.setp_count += 1
+
+        return self.setp_count
 
 
     def clear_board(self):
@@ -104,16 +114,18 @@ class Genetic_algorithm:
     def __init__(self, board):
         self.board = board
         self.orientation_lists = [ [] for i in range(self.board.n_queen) ] # Creates list with n empty lists
-        #print(self.orientation_lists)
-        #self.board.show()
-        # self.fitness_val = 0
+        self.board_fitness_vals = []
         self.fitness_total = 0
         
 
     def append_fitness_vals(self):
         print("Ayo")
         self.fitness_total = 0
+        self.board_fitness_vals.clear()
+        temp_list = []
+
         for i in range(self.board.n_queen):
+            
             self.board.clear_board()
             self.board.set_queens()
             
@@ -122,8 +134,12 @@ class Genetic_algorithm:
             self.board.show()
             #print(self.board.get_config_list())
             #self.orientation_lists.append(this_list.append(temp_list)) 
+            temp_list.append(fitness_val)
+            self.board_fitness_vals.append(temp_list)
             self.fitness_total += fitness_val
 
+        
+        print("F:", self.orientation_lists)
         return self.fitness_total # Sum of lists for division
 
 
@@ -139,12 +155,15 @@ if __name__ == '__main__':
     # Part 1 WORKS
     ################
 
-    # test = Board(5)
-    # test.set_queens()
-    # test.move()
-    # print("\nOptimal: " + str(test.fitness_max))
-    # print("\nFitness Max config: ", str(test.config_list))
-    # print(test.optimal_map)
+    test = Board(5)
+    test.set_queens()
+    temp_list = test.move()
+    print("\nOptimal: " + str(test.fitness_max))
+    print("Initial Config:", test.initial_config_list)
+    print("Fitness Max config: ", str(test.config_list))
+    print("\n",test.optimal_map)
+    x = test.calculate_steps()
+    print("# Steps",x)
 
     ################
     # End Part 1
@@ -155,8 +174,8 @@ if __name__ == '__main__':
     # Part 2 INC
     ################
 
-    board = Board(5)
-    gen_algo = Genetic_algorithm(board)
-    sum = gen_algo.append_fitness_vals()
-    print("Sum:", sum)
+    # board = Board(5)
+    # gen_algo = Genetic_algorithm(board)
+    # sum = gen_algo.append_fitness_vals()
+    # print("Sum:", sum)
     
