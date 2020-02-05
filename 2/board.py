@@ -71,10 +71,10 @@ class Board:
         self.initial_config_list = temp.copy()
         # self.initial_config_list = self.get_config_list()
         
-        print("IC:",self.initial_config_list)
-        print(self.map)
+       # print("IC:",self.initial_config_list)
+        #print(self.map)
         
-        while True:
+        while self.step_count < 100:
             
             for i in range(self.n_queen):
 
@@ -96,15 +96,20 @@ class Board:
                         self.save_config()
 
                         if temp_max == self.nCr(self.n_queen, 2):
-                            print("Max has been reached!!")
+                            #print("Max has been reached!!")
+                            x = test.get_step_count()
+                            print("Optimal fitness value of " + str(test.fitness_max),
+                            "has been reached in", x, "steps!!!\n\nWith the following board orientation:\n",self.optimal_map)
+                            #print("\n",test.optimal_map)
+
                             return self.initial_config_list
 
                     self.map[i][j] = 0 # Flip bit back
 
-                print("IC:",self.initial_config_list)
+                #print("IC:",self.initial_config_list)
         
-        if self.step_count == 1000:
-            print("You have exceeded maximum number of steps:", 1000)
+        if self.step_count == 100:
+            print("You have exceeded maximum number of steps:", 100)
             return self.initial_config_list
         
         return self.initial_config_list
@@ -179,13 +184,7 @@ if __name__ == '__main__':
     test = Board(5)
     test.set_queens()
     temp_list = test.move()
-    print("\nOptimal: " + str(test.fitness_max))
-    print("Initial Config:", test.initial_config_list)
-    print("Fitness Max config: ", str(test.config_list))
-    print("\n",test.optimal_map)
-    #x = test.calculate_steps()
-    x = test.get_step_count()
-    print("# Steps:",x)
+    
 
     ################
     # End Part 1
