@@ -141,6 +141,7 @@ class Genetic_algorithm:
         self.board = board
         self.orientation_lists = [] # Creates list with n empty lists
         self.board_fitness_vals = []
+        self.probability_list = []
         self.fitness_total = 0
         
 
@@ -149,6 +150,7 @@ class Genetic_algorithm:
         #self.fitness_total = 0
         self.board_fitness_vals.clear()
         temp_list = []
+        temp_list_fitness = []
 
         for i in range(self.board.n_queen):
             
@@ -158,24 +160,50 @@ class Genetic_algorithm:
             fitness_val = self.board.fitness() # Has fitness value
             temp_list = self.board.get_config_list()
             self.orientation_lists.append(temp_list.copy()) # Append current config 
-            print("Iteration:",i,"with configuration", self.board.get_config_list())
-            print("F:", self.orientation_lists)
-            self.board.show()
+            #print("Iteration:",i+1,"with configuration", self.board.get_config_list()) # KEEP THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            
+
+            #self.board.show()
+
+
             #print(self.board.get_config_list())
             #self.orientation_lists.append(this_list.append(temp_list)) 
-            temp_list.append(fitness_val)
-            self.board_fitness_vals.append(temp_list)
+            temp_list_fitness.append(fitness_val)
+            self.board_fitness_vals = temp_list_fitness.copy()
             self.fitness_total += fitness_val
 
         
-        
+        print("Orientation lists:", self.orientation_lists)
+        print("Fitness values:", self.board_fitness_vals,"\n")
+        self.calculate_probability() # WORKS!!!
+        self.sort_by_probability()
         return self.fitness_total # Sum of lists for division
 
-    
-    
+    # Calculate probabilities for each orientation
+    def calculate_probability(self):
 
-
+        for val in self.board_fitness_vals:
+            
+            temp = float("{0:.2f}".format(val / self.fitness_total))
+            print("val:", val,"Probability:", temp)
+            self.probability_list.append(temp)
+            #print(temp)
+            #print(self.probability_list, "\n")
+            #print("Probability:", "{0:.2f}".format(val / self.fitness_total))
     
+    # Sorts in ascending order (0.09. 0.18, 0.55, ....)
+    def sort_by_probability(self):
+        # https://stackoverflow.com/questions/6618515/sorting-list-based-on-values-from-another-list
+
+        self.orientation_lists = np.array(self.orientation_lists)
+        self.probability_list = np.array(self.probability_list)
+        inds = self.probability_list.argsort()
+        sortedList = self.orientation_lists[inds]
+        print(sortedList)
+        
+
+    #def selection(self):
+        
 
 
 
@@ -201,7 +229,7 @@ if __name__ == '__main__':
     # Part 2 INC
     ################
 
-    board = Board(5)
+    board = Board(8)
     gen_algo = Genetic_algorithm(board)
     sum = gen_algo.append_fitness_vals()
     print("Sum:", sum)
