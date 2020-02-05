@@ -139,14 +139,14 @@ class Genetic_algorithm:
    
     def __init__(self, board):
         self.board = board
-        self.orientation_lists = [ [] for i in range(self.board.n_queen) ] # Creates list with n empty lists
+        self.orientation_lists = [] # Creates list with n empty lists
         self.board_fitness_vals = []
         self.fitness_total = 0
         
 
     def append_fitness_vals(self):
         print("Ayo")
-        self.fitness_total = 0
+        #self.fitness_total = 0
         self.board_fitness_vals.clear()
         temp_list = []
 
@@ -156,7 +156,10 @@ class Genetic_algorithm:
             self.board.set_queens()
             
             fitness_val = self.board.fitness() # Has fitness value
-            self.orientation_lists[i].append(self.board.get_config_list()) # Append current config 
+            temp_list = self.board.get_config_list()
+            self.orientation_lists.append(temp_list.copy()) # Append current config 
+            print("Iteration:",i,"with configuration", self.board.get_config_list())
+            print("F:", self.orientation_lists)
             self.board.show()
             #print(self.board.get_config_list())
             #self.orientation_lists.append(this_list.append(temp_list)) 
@@ -165,8 +168,11 @@ class Genetic_algorithm:
             self.fitness_total += fitness_val
 
         
-        print("F:", self.orientation_lists)
+        
         return self.fitness_total # Sum of lists for division
+
+    
+    
 
 
     
@@ -181,9 +187,9 @@ if __name__ == '__main__':
     # Part 1 WORKS
     ################
 
-    test = Board(5)
-    test.set_queens()
-    temp_list = test.move()
+    # test = Board(5)
+    # test.set_queens()
+    # temp_list = test.move()
     
 
     ################
@@ -195,8 +201,8 @@ if __name__ == '__main__':
     # Part 2 INC
     ################
 
-    # board = Board(5)
-    # gen_algo = Genetic_algorithm(board)
-    # sum = gen_algo.append_fitness_vals()
-    # print("Sum:", sum)
+    board = Board(5)
+    gen_algo = Genetic_algorithm(board)
+    sum = gen_algo.append_fitness_vals()
+    print("Sum:", sum)
     
