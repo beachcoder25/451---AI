@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import math
 
 
 class Board:
@@ -13,7 +14,7 @@ class Board:
         self.config_list = []
         self.max_config_list = []
         self.temp_config_list = []
-        self.setp_count = 0
+        self.step_count = 0
         #print("Board constructed!\n")
 
     def set_queens(self):
@@ -73,41 +74,61 @@ class Board:
         print("IC:",self.initial_config_list)
         print(self.map)
         
-        for i in range(self.n_queen):
-
-            if i > 0:
-                self.map = np.copy(self.optimal_map)
-
-            self.map[i] = [0] * self.n_queen # Set current row to all 0's, WORKS
+        while True:
             
-            #print("\n\nMOVE FUNCTION\n\n")
-            for j in range(self.n_queen):
-                self.map[i][j] = 1 # Flip bit
-                temp_max = self.fitness()
-                #self.show()
+            for i in range(self.n_queen):
+
+                self.step_count += 1
+                if i > 0:
+                    self.map = np.copy(self.optimal_map)
+
+                self.map[i] = [0] * self.n_queen # Set current row to all 0's, WORKS
                 
+                #print("\n\nMOVE FUNCTION\n\n")
+                for j in range(self.n_queen):
+                    self.map[i][j] = 1 # Flip bit
+                    temp_max = self.fitness()
+                    #self.show()
+                    
 
-                if temp_max > self.fitness_max:
-                    self.fitness_max = temp_max
-                    self.save_config()
+                    if temp_max > self.fitness_max:
+                        self.fitness_max = temp_max
+                        self.save_config()
 
-                self.map[i][j] = 0 # Flip bit back
+                        if temp_max == self.nCr(self.n_queen, 2):
+                            print("Max has been reached!!")
+                            return self.initial_config_list
 
-            print("IC:",self.initial_config_list)
+                    self.map[i][j] = 0 # Flip bit back
+
+                print("IC:",self.initial_config_list)
+        
+        if self.step_count == 1000:
+            print("You have exceeded maximum number of steps:", 1000)
+            return self.initial_config_list
+        
         return self.initial_config_list
+
+    def get_step_count(self):
+        return self.step_count
+
 
     def calculate_steps(self):
 
         for i in range(self.n_queen):
             if self.initial_config_list[i] != self.config_list:
-                self.setp_count += 1
+                self.step_count += 1
 
-        return self.setp_count
+        return self.step_count
 
 
     def clear_board(self):
         self.map = [[0 for j in range(self.n_queen)] for i in range(self.n_queen)]
-        
+
+    def nCr(self, n,r):
+        f = math.factorial
+        return f(n) / f(r) / f(n-r)
+            
 
 class Genetic_algorithm:
    
@@ -162,8 +183,9 @@ if __name__ == '__main__':
     print("Initial Config:", test.initial_config_list)
     print("Fitness Max config: ", str(test.config_list))
     print("\n",test.optimal_map)
-    x = test.calculate_steps()
-    print("# Steps",x)
+    #x = test.calculate_steps()
+    x = test.get_step_count()
+    print("# Steps:",x)
 
     ################
     # End Part 1
