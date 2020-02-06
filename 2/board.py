@@ -1,6 +1,8 @@
 import random
 import numpy as np
 import math
+import random
+
 
 
 class Board:
@@ -97,8 +99,8 @@ class Board:
 
                         if temp_max == self.nCr(self.n_queen, 2):
                             #print("Max has been reached!!")
-                            x = test.get_step_count()
-                            print("Optimal fitness value of " + str(test.fitness_max),
+                            x = self.get_step_count()
+                            print("Optimal fitness value of " + str(self.fitness_max),
                             "has been reached in", x, "steps!!!\n\nWith the following board orientation:\n",self.optimal_map)
                             #print("\n",test.optimal_map)
 
@@ -142,6 +144,8 @@ class Genetic_algorithm:
         self.orientation_lists = [] # Creates list with n empty lists
         self.board_fitness_vals = []
         self.probability_list = []
+        self.selection_list = []
+        self.sorted_list = []
         self.fitness_total = 0
         
 
@@ -198,12 +202,56 @@ class Genetic_algorithm:
         self.orientation_lists = np.array(self.orientation_lists)
         self.probability_list = np.array(self.probability_list)
         inds = self.probability_list.argsort()
-        sortedList = self.orientation_lists[inds]
-        print(sortedList)
+        self.sorted_list = self.orientation_lists[inds]
+        print(self.sorted_list)
         
 
-    #def selection(self):
+    def selection(self):
         
+        
+        temp_list = self.probability_list.tolist()
+        
+        temp_list2 = temp_list.copy()
+        print("sum",sum(temp_list2[0:2]))
+        probability_sum = 0
+        print(temp_list)
+
+        for i in range(1):
+            #random_num = random.uniform(0, 1)
+            random_num = (temp_list2[0] + temp_list2[1]) - .0001
+            print(random_num, "<",temp_list2[0])
+
+            if random_num < temp_list2[0]:
+                probability_sum += temp_list2[0]
+                #print(self.sorted_list)
+                self.selection_list.append(self.sorted_list[0])
+                #print("p_sum", probability_sum)
+
+            elif random_num > temp_list2[0] and random_num < (temp_list2[0] + temp_list2[1]):
+                
+                self.selection_list.append(self.sorted_list[1])
+                print(self.selection_list)
+                #print("p_sum", probability_sum)
+
+            elif random_num > (temp_list2[0] + temp_list2[1]) and random_num < (temp_list2[0] + temp_list2[1] + temp_list2[2]):
+
+                self.selection_list.append(self.sorted_list[2])
+                print(self.selection_list)
+
+            elif random_num > (temp_list2[0] + temp_list2[1] + temp_list2[2]) and random_num < (temp_list2[0] + temp_list2[1] + temp_list2[2] + temp_list2[3]):
+
+                self.selection_list.append(self.sorted_list[2])
+                print(self.selection_list)
+
+            elif random_num > (temp_list2[0] + temp_list2[1]) and random_num < (temp_list2[0] + temp_list2[1] + temp_list2[2]):
+
+                self.selection_list.append(self.sorted_list[2])
+                print(self.selection_list)
+            
+
+            
+
+            #print(random_num)
 
 
 
@@ -231,6 +279,7 @@ if __name__ == '__main__':
 
     board = Board(8)
     gen_algo = Genetic_algorithm(board)
-    sum = gen_algo.append_fitness_vals()
-    print("Sum:", sum)
+    sum1 = gen_algo.append_fitness_vals()
+    print("Sum:", sum1)
+    gen_algo.selection()
     
