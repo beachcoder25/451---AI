@@ -149,6 +149,19 @@ class Genetic_algorithm:
         self.crossover_list = []
         self.sorted_list = []
         self.fitness_total = 0
+
+    def runner(self):
+        board = Board(8)
+        gen_algo = Genetic_algorithm(board)
+
+        for i in range(5):
+            sum1 = gen_algo.append_fitness_vals()
+            print("Sum:", sum1)
+
+
+            gen_algo.selection()
+            gen_algo.crossover()
+            gen_algo.mutation()
         
 
     def append_fitness_vals(self):
@@ -166,14 +179,6 @@ class Genetic_algorithm:
             fitness_val = self.board.fitness() # Has fitness value
             temp_list = self.board.get_config_list()
             self.orientation_lists.append(temp_list.copy()) # Append current config 
-            #print("Iteration:",i+1,"with configuration", self.board.get_config_list()) # KEEP THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            
-
-            #self.board.show()
-
-
-            #print(self.board.get_config_list())
-            #self.orientation_lists.append(this_list.append(temp_list)) 
             temp_list_fitness.append(fitness_val)
             self.board_fitness_vals = temp_list_fitness.copy()
             self.fitness_total += fitness_val
@@ -279,7 +284,7 @@ class Genetic_algorithm:
         print("RandVal:",value)
 
         print("Before:",self.selection_list)
-        print("Type",type(self.selection_list))
+        
 
 
 
@@ -321,6 +326,15 @@ class Genetic_algorithm:
         print("After:",self.selection_list)
 
 
+    def mutation(self):
+
+        for list in self.selection_list:
+            index = randint(0, 7)
+            value = randint(0, 7)
+            list[index] = value
+
+        print("Final:",self.selection_list)
+
 
 
 if __name__ == '__main__':
@@ -345,8 +359,14 @@ if __name__ == '__main__':
 
     board = Board(8)
     gen_algo = Genetic_algorithm(board)
-    sum1 = gen_algo.append_fitness_vals()
-    print("Sum:", sum1)
-    gen_algo.selection()
-    gen_algo.crossover()
+    gen_algo.runner()
+    
+    # sum1 = gen_algo.append_fitness_vals()
+    # print("Sum:", sum1)
+
+
+    # gen_algo.selection()
+    # gen_algo.crossover()
+    # gen_algo.mutation()
+
     
