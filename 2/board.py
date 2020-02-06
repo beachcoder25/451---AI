@@ -2,6 +2,7 @@ import random
 import numpy as np
 import math
 import random
+from random import randint
 
 
 
@@ -145,6 +146,7 @@ class Genetic_algorithm:
         self.board_fitness_vals = []
         self.probability_list = []
         self.selection_list = []
+        self.crossover_list = []
         self.sorted_list = []
         self.fitness_total = 0
         
@@ -189,7 +191,7 @@ class Genetic_algorithm:
         for val in self.board_fitness_vals:
             
             temp = float("{0:.2f}".format(val / self.fitness_total))
-            print("val:", val,"Probability:", temp)
+            #print("val:", val,"Probability:", temp)
             self.probability_list.append(temp)
             #print(temp)
             #print(self.probability_list, "\n")
@@ -202,7 +204,7 @@ class Genetic_algorithm:
         self.orientation_lists = np.array(self.orientation_lists)
         self.probability_list = np.array(self.probability_list)
         inds = self.probability_list.argsort()
-        self.sorted_list = self.orientation_lists[inds]
+        self.sorted_list = self.orientation_lists[inds].tolist()
         print(self.sorted_list)
         
 
@@ -216,10 +218,12 @@ class Genetic_algorithm:
         probability_sum = 0
         print(temp_list)
 
-        for i in range(1):
-            #random_num = random.uniform(0, 1)
-            random_num = sum(temp_list2[0:8]) - .0001
-            print(random_num, "<",sum(temp_list2[0:8]))
+        #self.sorted_list.tolist()
+
+        for i in range(8):
+            random_num = random.uniform(0, 1)
+            #random_num = sum(temp_list2[0:8]) - .0001
+            #print(random_num, "<",sum(temp_list2[0:8]))
 
             if random_num < temp_list2[0]:
                 probability_sum += temp_list2[0]
@@ -230,42 +234,91 @@ class Genetic_algorithm:
             elif random_num > temp_list2[0] and random_num < sum(temp_list2[0:2]):
                 
                 self.selection_list.append(self.sorted_list[1])
-                print(self.selection_list)
+                #print(self.selection_list)
                 #print("p_sum", probability_sum)
 
             elif random_num > sum(temp_list2[0:2]) and random_num < sum(temp_list2[0:3]):
 
                 self.selection_list.append(self.sorted_list[2])
-                print(self.selection_list)
+                #print(self.selection_list)
 
             elif random_num > sum(temp_list2[0:3]) and random_num < sum(temp_list2[0:4]):
 
                 self.selection_list.append(self.sorted_list[3])
-                print(self.selection_list)
+                #print(self.selection_list)
 
             elif random_num > sum(temp_list2[0:4]) and random_num < sum(temp_list2[0:5]):
 
                 self.selection_list.append(self.sorted_list[4])
-                print(self.selection_list)
+                #print(self.selection_list)
 
             elif random_num > sum(temp_list2[0:5]) and random_num < sum(temp_list2[0:6]):
 
                 self.selection_list.append(self.sorted_list[5])
-                print(self.selection_list)
+                #print(self.selection_list)
 
             elif random_num > sum(temp_list2[0:6]) and random_num < sum(temp_list2[0:7]):
 
                 self.selection_list.append(self.sorted_list[6])
-                print(self.selection_list)
+                #print(self.selection_list)
             
-            elif random_num > sum(temp_list2[0:7]) and random_num < sum(temp_list2[0:8]):
+            elif random_num > sum(temp_list2[0:7]) and random_num <= 1:
 
                 self.selection_list.append(self.sorted_list[7])
-                print(self.selection_list)
+                #print(self.selection_list)
             
 
-            #print(random_num)
+        print(self.selection_list)
+        #print(random_num)
 
+    def crossover(self):
+
+        value = randint(0, 7)
+
+        #self.selection_list.tolist()
+        print("RandVal:",value)
+
+        print("Before:",self.selection_list)
+        print("Type",type(self.selection_list))
+
+
+
+        temp_list0 = self.selection_list[0][:value] + self.selection_list[1][value:]
+        temp_list1 = self.selection_list[1][:value] + self.selection_list[0][value:]
+        
+
+        self.selection_list[0] = temp_list0
+        self.selection_list[1] = temp_list1
+
+
+        value = randint(0, 7)
+
+        temp_list2 = self.selection_list[2][:value] + self.selection_list[3][value:]
+        temp_list3 = self.selection_list[3][:value] + self.selection_list[2][value:]
+        
+
+        self.selection_list[2] = temp_list2
+        self.selection_list[3] = temp_list3
+
+
+        value = randint(0, 7)
+
+        temp_list4 = self.selection_list[4][:value] + self.selection_list[5][value:]
+        temp_list5 = self.selection_list[5][:value] + self.selection_list[4][value:]
+        self.selection_list[4] = temp_list4
+        self.selection_list[5] = temp_list5
+
+
+        value = randint(0, 7)
+
+        temp_list6 = self.selection_list[6][:value] + self.selection_list[7][value:]
+        temp_list7 = self.selection_list[7][:value] + self.selection_list[6][value:]
+        self.selection_list[6] = temp_list6
+        self.selection_list[7] = temp_list7
+
+
+
+        print("After:",self.selection_list)
 
 
 
@@ -295,4 +348,5 @@ if __name__ == '__main__':
     sum1 = gen_algo.append_fitness_vals()
     print("Sum:", sum1)
     gen_algo.selection()
+    gen_algo.crossover()
     
