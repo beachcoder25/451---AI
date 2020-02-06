@@ -218,8 +218,8 @@ class Genetic_algorithm:
 
         for i in range(1):
             #random_num = random.uniform(0, 1)
-            random_num = (temp_list2[0] + temp_list2[1]) - .0001
-            print(random_num, "<",temp_list2[0])
+            random_num = sum(temp_list2[0:8]) - .0001
+            print(random_num, "<",sum(temp_list2[0:8]))
 
             if random_num < temp_list2[0]:
                 probability_sum += temp_list2[0]
@@ -227,28 +227,41 @@ class Genetic_algorithm:
                 self.selection_list.append(self.sorted_list[0])
                 #print("p_sum", probability_sum)
 
-            elif random_num > temp_list2[0] and random_num < (temp_list2[0] + temp_list2[1]):
+            elif random_num > temp_list2[0] and random_num < sum(temp_list2[0:2]):
                 
                 self.selection_list.append(self.sorted_list[1])
                 print(self.selection_list)
                 #print("p_sum", probability_sum)
 
-            elif random_num > (temp_list2[0] + temp_list2[1]) and random_num < (temp_list2[0] + temp_list2[1] + temp_list2[2]):
+            elif random_num > sum(temp_list2[0:2]) and random_num < sum(temp_list2[0:3]):
 
                 self.selection_list.append(self.sorted_list[2])
                 print(self.selection_list)
 
-            elif random_num > (temp_list2[0] + temp_list2[1] + temp_list2[2]) and random_num < (temp_list2[0] + temp_list2[1] + temp_list2[2] + temp_list2[3]):
+            elif random_num > sum(temp_list2[0:3]) and random_num < sum(temp_list2[0:4]):
 
-                self.selection_list.append(self.sorted_list[2])
+                self.selection_list.append(self.sorted_list[3])
                 print(self.selection_list)
 
-            elif random_num > (temp_list2[0] + temp_list2[1]) and random_num < (temp_list2[0] + temp_list2[1] + temp_list2[2]):
+            elif random_num > sum(temp_list2[0:4]) and random_num < sum(temp_list2[0:5]):
 
-                self.selection_list.append(self.sorted_list[2])
+                self.selection_list.append(self.sorted_list[4])
+                print(self.selection_list)
+
+            elif random_num > sum(temp_list2[0:5]) and random_num < sum(temp_list2[0:6]):
+
+                self.selection_list.append(self.sorted_list[5])
+                print(self.selection_list)
+
+            elif random_num > sum(temp_list2[0:6]) and random_num < sum(temp_list2[0:7]):
+
+                self.selection_list.append(self.sorted_list[6])
                 print(self.selection_list)
             
+            elif random_num > sum(temp_list2[0:7]) and random_num < sum(temp_list2[0:8]):
 
+                self.selection_list.append(self.sorted_list[7])
+                print(self.selection_list)
             
 
             #print(random_num)
