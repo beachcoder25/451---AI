@@ -107,12 +107,15 @@ def setAirPortForCities():
 #            
 #    
 #   
-zip_cities = zip(*cities)
-# plt.scatter(*zip_cities, marker='+',color='b', label='Cities')
-zip_airs = zip(*airports)
-# plt.scatter(*zip_airs, marker='*', color='r', s=100, label='Airports')
-# plt.legend()
-#plt.show()
+def display_plot():
+    zip_cities = zip(*cities)
+    plt.scatter(*zip_cities, marker='+',color='b', label='Cities')
+    zip_airs = zip(*airports)
+    plt.scatter(*zip_airs, marker='*', color='r', s=100, label='Airports')
+    plt.legend()
+    plt.show()
+
+display_plot()
 #
 #
 #
@@ -145,5 +148,7 @@ plt.scatter(np.arange(1, epochs+1), obj_values)
 plt.ylabel('sum_of_distances')
 plt.xlabel('number_of_epochs')
 plt.show()
+
+display_plot()
 
 print("\nDONE!")
