@@ -1,0 +1,406 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head></head><body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+
+  <div class="border-box-sizing">
+    <div class="container">
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[&#160;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">copy</span> <span class="k">as</span> <span class="nn">cp</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="k">import</span> <span class="n">comb</span>
+
+
+<span class="k">class</span> <span class="nc">Board</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_queen</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+
+
+    <span class="k">def</span> <span class="nf">get_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_queen</span>
+
+
+    <span class="k">def</span> <span class="nf">get_queen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="p">:</span>
+      <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">      Retrieves column position of queen in row &#39;r&#39; </span>
+<span class="sd">      &#39;&#39;&#39;</span>
+      <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+      <span class="c1">#</span>
+      <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">:</span>
+          <span class="k">return</span> <span class="n">c</span>
+        <span class="k">else</span> <span class="p">:</span>
+          <span class="n">c</span> <span class="o">+=</span> <span class="mi">1</span>
+
+
+    <span class="k">def</span> <span class="nf">queen_on</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="p">:</span>
+      <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">      Place a queen at row &#39;r&#39; column &#39;c&#39;</span>
+<span class="sd">      &#39;&#39;&#39;</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+  
+    <span class="k">def</span> <span class="nf">queen_off</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="p">:</span>
+      <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">      Remove queen from row &#39;r&#39; column &#39;c&#39;</span>
+<span class="sd">      &#39;&#39;&#39;</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+    <span class="k">def</span> <span class="nf">set_queens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_queen</span><span class="p">):</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_queen</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+ 
+
+    <span class="k">def</span> <span class="nf">reset_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="p">:</span>
+      <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">      Move queen to column 0 in row &#39;r&#39;</span>
+<span class="sd">      &#39;&#39;&#39;</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">get_queen</span><span class="p">(</span><span class="n">r</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+    <span class="k">def</span> <span class="nf">fitness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_queen</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_queen</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_queen</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_queen</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_queen</span> <span class="o">-</span> <span class="n">i</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">k</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">fit</span> <span class="o">-=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">j</span> <span class="o">-</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">k</span><span class="p">][</span><span class="n">j</span> <span class="o">-</span> <span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">fit</span> <span class="o">-=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">j</span> <span class="o">+</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_queen</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">k</span><span class="p">][</span><span class="n">j</span> <span class="o">+</span> <span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">fit</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">fit</span>
+
+
+    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Fitness: &quot;</span><span class="p">,</span>  <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span><span class="p">(),</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="p">)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#       </span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">test</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">test</span><span class="o">.</span><span class="n">set_queens</span><span class="p">()</span>
+    <span class="n">test</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>    
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[&#160;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="k">class</span> <span class="nc">Hill_Climb</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    @param b : pre-initialized Board object to be optimized</span>
+<span class="sd">    @param n : max number of allowed steps</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">board</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="n">n</span>
+
+
+    <span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Attempts to find a solution within &quot;self.max_steps&quot; steps</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">best_fit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">fitness</span><span class="p">()</span>
+        <span class="n">best_clmns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># initialize optimal solution to original config</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">get_dim</span><span class="p">()</span> <span class="p">)</span> <span class="p">:</span>
+            <span class="n">best_clmns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">get_queen</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="p">)</span>
+        <span class="c1"># loop until soln found or max_steps taken</span>
+        <span class="k">while</span> <span class="p">(</span> <span class="n">best_fit</span> <span class="o">&lt;</span> <span class="n">comb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">get_dim</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">)</span> <span class="p">:</span>
+            <span class="c1"># step through each row</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">get_dim</span><span class="p">()</span> <span class="p">)</span> <span class="p">:</span>
+                <span class="c1"># memorize original column position</span>
+                <span class="n">pos0</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span> <span class="n">best_clmns</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="p">)</span>
+                <span class="c1"># pick queen up</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">queen_off</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">get_queen</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="p">)</span>
+                <span class="c1"># slide queen along row</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">get_dim</span><span class="p">()</span> <span class="p">)</span> <span class="p">:</span>
+                    <span class="c1"># put queen down</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">queen_on</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">fitness</span><span class="p">()</span> <span class="o">==</span> <span class="n">comb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">get_dim</span><span class="p">(),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">:</span>
+                        <span class="n">best_clmns</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">return</span> 
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">fitness</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">best_fit</span> <span class="p">:</span>
+                        <span class="c1"># save column with better fit</span>
+                        <span class="n">best_clmns</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+                        <span class="n">best_fit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">fitness</span><span class="p">()</span>
+                    <span class="c1"># pick queen up  </span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">queen_off</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+                <span class="c1"># return queen to best column before moving to next row</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">queen_on</span><span class="p">(</span> <span class="n">r</span><span class="p">,</span> <span class="n">best_clmns</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>  
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;STEP:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>     
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Steps:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>  
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">board</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">board</span><span class="o">.</span><span class="n">set_queens</span><span class="p">()</span>
+    <span class="n">board</span><span class="o">.</span><span class="n">fitness</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;INITIAL CONFIGURATION&quot;</span><span class="p">)</span>
+    <span class="n">board</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> 
+
+    <span class="n">climb</span> <span class="o">=</span> <span class="n">Hill_Climb</span><span class="p">(</span><span class="n">board</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+    <span class="n">climb</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;FINAL CONFIGURATION&quot;</span><span class="p">)</span>
+    <span class="n">climb</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&#160;[&#160;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Genetic</span><span class="p">:</span>
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">k_states</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># initialize k_states</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="p">:</span>
+      <span class="n">board</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+      <span class="n">board</span><span class="o">.</span><span class="n">set_queens</span><span class="p">()</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">k_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">board</span><span class="p">)</span> <span class="p">)</span>
+
+
+  <span class="k">def</span> <span class="nf">find_soln</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Performs selection, pairing, crossover and mutation. Returns configuration</span>
+<span class="sd">    optimal fitness score or the highest fitness score after &#39;max_steps&#39; </span>
+<span class="sd">    iterations. </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">#</span>
+    <span class="n">optimal</span> <span class="o">=</span> <span class="n">comb</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_states</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
+    <span class="c1">#</span>
+    <span class="n">best</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_states</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">best</span><span class="o">.</span><span class="n">fitness</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">optimal</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">)</span> <span class="p">:</span>
+      <span class="n">cum_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_states</span><span class="p">)</span>
+      <span class="c1">#</span>
+      <span class="n">select_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_states</span><span class="p">,</span> <span class="n">cum_prob</span><span class="p">)</span>
+      <span class="c1">#</span>
+      <span class="n">cross_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pair_and_cross</span><span class="p">(</span><span class="n">select_states</span><span class="p">)</span>
+      <span class="c1">#</span>
+      <span class="n">mutants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span><span class="n">cross_states</span><span class="p">)</span>
+      <span class="c1">#</span>
+      <span class="n">candidate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_fit</span><span class="p">(</span><span class="n">mutants</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">fitness</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">best</span><span class="o">.</span><span class="n">fitness</span><span class="p">()</span> <span class="p">:</span>
+        <span class="n">best</span> <span class="o">=</span> <span class="n">candidate</span>
+      <span class="c1">#</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">k_states</span> <span class="o">=</span> <span class="n">mutants</span>
+      <span class="c1">#</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1">#</span>
+    <span class="k">return</span> <span class="n">best</span>
+
+
+  <span class="k">def</span> <span class="nf">best_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculates fitness scores for each configuration in &#39;states&#39; list and </span>
+<span class="sd">    returns the configuration with the highest score.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">#</span>
+    <span class="n">best</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">soln</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1">#</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">)</span> <span class="p">)</span> <span class="p">:</span>
+      <span class="n">board</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span> <span class="n">states</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span>
+      <span class="n">fit</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">fitness</span><span class="p">()</span>
+      <span class="c1">#</span>
+      <span class="k">if</span> <span class="n">fit</span> <span class="o">&gt;</span> <span class="n">best</span> <span class="p">:</span>
+        <span class="n">soln</span> <span class="o">=</span> <span class="n">board</span>
+        <span class="n">best</span> <span class="o">=</span> <span class="n">fit</span>
+ 
+    <span class="k">return</span> <span class="n">soln</span>
+
+
+  <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    For each configuration in &#39;states&#39;, randomly chooses an element </span>
+<span class="sd">    (row position) and changes the value (column position).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">mutants</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">)</span> <span class="p">)</span> <span class="p">:</span>
+      <span class="n">rand_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">)</span>
+      <span class="n">rand_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">)</span>
+
+      <span class="n">states</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">rand_pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">rand_val</span>
+      <span class="n">mutants</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">cp</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span> <span class="n">states</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">mutants</span>
+
+
+  <span class="k">def</span> <span class="nf">pair_and_cross</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Pairs configurations in &#39;states&#39; list, randomly slices each pair at a </span>
+<span class="sd">    common index, then swaps the tail ends of each configuration string in the </span>
+<span class="sd">    pair. </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">cross_states</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">)</span> <span class="p">:</span>
+      <span class="n">demarc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">)</span> 
+      
+      <span class="n">s1</span> <span class="o">=</span> <span class="n">states</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">demarc</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">states</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">demarc</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span> 
+      <span class="n">s2</span> <span class="o">=</span> <span class="n">states</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">demarc</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">states</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">][</span><span class="n">demarc</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+
+      <span class="n">cross_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+      <span class="n">cross_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">cross_states</span>
+
+
+  <span class="k">def</span> <span class="nf">selection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">cum_prob</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    For each configuration in &#39;states&#39;, generates a random number in range (0,1)</span>
+<span class="sd">    and selects the corresponding configuration mapped to &#39;cum_prob&#39;. </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">new_states</span> <span class="o">=</span> <span class="p">[]</span>    
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">)</span> <span class="p">)</span> <span class="p">:</span> 
+      <span class="n">rand</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span>
+
+      <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">cum_prob</span><span class="p">)</span> <span class="p">)</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">rand</span> <span class="o">&lt;</span> <span class="n">cum_prob</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="p">:</span>
+          <span class="n">new_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">states</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="p">)</span>
+          <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">new_states</span>
+
+
+  <span class="k">def</span> <span class="nf">calc_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">states</span><span class="p">)</span> <span class="p">:</span>  
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Transforms each configuration in &#39;states&#39; to a Board object, calculates its</span>
+<span class="sd">    fitness score and constructs then returns a cumulative probability array. </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">fit_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">prob_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">cum_prob</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">states</span><span class="p">)</span> <span class="p">)</span> <span class="p">:</span>
+      <span class="n">fit_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span> <span class="n">states</span><span class="p">[</span><span class="n">r</span><span class="p">])</span><span class="o">.</span><span class="n">fitness</span><span class="p">()</span> <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">fit_list</span><span class="p">)</span> <span class="p">)</span> <span class="p">:</span>
+      <span class="n">prob_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">fit_list</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">fit_list</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="n">accum</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">prob_list</span><span class="p">)</span> <span class="p">)</span> <span class="p">:</span>
+      <span class="n">cum_prob</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">accum</span> <span class="o">+</span> <span class="n">prob_list</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="p">)</span> 
+      <span class="n">accum</span> <span class="o">+=</span> <span class="n">prob_list</span><span class="p">[</span><span class="n">r</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">cum_prob</span>
+
+
+  <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Represents a chessboard of Queens as a list of integers. The ith integer &#39;c&#39; </span>
+<span class="sd">    in the list means row &#39;i&#39; of the chessboard has a Queen in column &#39;c&#39;.</span>
+
+<span class="sd">    @param b : Board object to be encoded. </span>
+
+<span class="sd">    @returns : integer list</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="n">b</span><span class="o">.</span><span class="n">get_dim</span><span class="p">()</span> <span class="p">)</span> <span class="p">:</span>
+      <span class="n">state</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">b</span><span class="o">.</span><span class="n">get_queen</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cp</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+
+  <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Transforms state configuration into a board object and returns it</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">new_board</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="p">)</span> <span class="p">:</span> 
+      <span class="n">new_board</span><span class="o">.</span><span class="n">queen_on</span><span class="p">(</span> <span class="n">r</span><span class="p">,</span> <span class="n">state</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_board</span>
+
+  
+  <span class="k">def</span> <span class="nf">show_k_states</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k_states</span><span class="p">)</span> <span class="p">)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+  <span class="n">gene</span> <span class="o">=</span> <span class="n">Genetic</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+  <span class="n">gene</span><span class="o">.</span><span class="n">find_soln</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;STEPS:&quot;</span><span class="p">,</span> <span class="n">gene</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    </div>
+  </div>
+
+
+ 
+
+
+
+<script type="text/javascript" src="/d2l/common/math/MathML.js?v=20.20.1.19936-155 "></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() { D2LMathML.DesktopInit('https://s.brightspace.com/lib/mathjax/2.6.1/MathJax.js?config=MML_HTMLorMML','https://s.brightspace.com/lib/mathjax/2.6.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML'); });</script></body></html>
